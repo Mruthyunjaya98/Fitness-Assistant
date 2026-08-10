@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { background-color: #121212; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; margin: 0; }
+    .header { text-align: center; color: #ff9900; font-weight: bold; margin-bottom: 20px; font-size: 1.2rem; }
+    .btn-card { background: #1e1e1e; border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; }
+    .btn-card:hover { border-color: #70ff00; background: #252525; }
+    .btn-icon { font-size: 2rem; margin-right: 15px; }
+    .btn-title { font-size: 1.1rem; font-weight: bold; color: #fff; }
+    .input-field { width: 100%; padding: 10px; margin: 8px 0; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
+    .submit-btn { width: 100%; background: #70ff00; color: #000; font-weight: bold; padding: 12px; border: none; border-radius: 8px; font-size: 1rem; margin-top: 10px; cursor: pointer; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="header">OmSarvaDevaGanayaNamaha 🕉️🙏🚩</div>
+
+  <div id="view-workout" class="<?= view === 'workout' ? '' : 'hidden' ?>">
+    <div class="btn-card" onclick="openExercise('Kapalabhathi', 'breaths')"><span class="btn-icon">🧘‍♂️</span><span class="btn-title">Kapalabhathi</span></div>
+    <div class="btn-card" onclick="openExercise('Analoama-Viloama', 'breaths')"><span class="btn-icon">🧘</span><span class="btn-title">Analoama-Viloama</span></div>
+    <div class="btn-card" onclick="openExercise('Jog', 'distance')"><span class="btn-icon">🏃‍♂️</span><span class="btn-title">Jog</span></div>
+    <div class="btn-card" onclick="openExercise('Push Ups', 'reps')"><span class="btn-icon">💪</span><span class="btn-title">Push Ups</span></div>
+    <div class="btn-card" onclick="openExercise('Barbell Squats', 'reps')"><span class="btn-icon">🏋️‍♂️</span><span class="btn-title">Barbell Squats</span></div>
+    <div class="btn-card" onclick="openExercise('Walk', 'distance')"><span class="btn-icon">🚶‍♂️</span><span class="btn-title">Walk</span></div>
+  </div>
+
+  <div id="view-daily" class="<?= view === 'daily' ? '' : 'hidden' ?>">
+    <div class="btn-card" onclick="openSection('diet')"><span class="btn-icon">🥗</span><span class="btn-title">Diet Intake (Pure Veg)</span></div>
+    <div class="btn-card" onclick="openSection('hydration')"><span class="btn-icon">💧</span><span class="btn-title">Hydration Intake</span></div>
+    <div class="btn-card" onclick="openSection('sleep')"><span class="btn-icon">😴</span><span class="btn-title">Sleep Tracker</span></div>
+  </div>
+
+  <!-- Dynamic Form Modal -->
+  <div id="form-modal" class="hidden">
+    <h3 id="form-title" style="color: #70ff00;">Enter Details</h3>
+    <div id="form-inputs"></div>
+    <button class="submit-btn" onclick="submitData()">Log Entry</button>
+  </div>
+
+  <script>
+    let currentPayload = {};
+
+    function openExercise(name, category) {
+      document.getElementById('view-workout').classList.add('hidden');
+      document.getElementById('form-modal').classList.remove('hidden');
+      document.getElementById('form-title').innerText = name;
+      currentPayload = { type: 'workout', exercise: name };
+      
+      let html = '<label>Duration (mins)</label><input type="number" id="inp-duration" class="input-field">';
+      if (category === 'breaths') {
+        html += '<label>Number of Breaths</label><input type="number" id="inp-breaths" class="input-field"><label>Sets</label><input type="number" id="inp-sets" class="input-field">';
+      } else if (category === 'distance') {
+        html += '<label>Distance (km)</label><input type="number" step="0.1" id="inp-dist" class="input-field">';
+      } else if (category === 'reps') {
+        html += '<label>Reps Count</label><input type="number" id="inp-reps" class="input-field"><label>Sets</label><input type="number" id="inp-sets" class="input-field">';
+      }
+      document.getElementById('form-inputs').innerHTML = html;
+    }
+
+    function openSection(type) {
+      document.getElementById('view-daily').classList.add('hidden');
+      document.getElementById('form-modal').classList.remove('hidden');
+      currentPayload = { type: type };
+
+      if (type === 'hydration') {
+        document.getElementById('form-title').innerText = "Log Water Intake 💧";
+        document.getElementById('form-inputs').innerHTML = `
+          <label>Select Quantity</label>
+          <select id="inp-water" class="input-field">
+            <option value="100 ml">100 ml</option>
+            <option value="200 ml">200 ml</option>
+            <option value="250 ml">250 ml</option>
+            <option value="500 ml">500 ml</option>
+            <option value="1000 ml">1 Liter</option>
+          </select>`;
+      } else if (type === 'diet') {
+        document.getElementById('form-title').innerText = "Log Pure Veg Diet 🥗";
+        document.getElementById('form-inputs').innerHTML = `
+          <label>Food / Beverage Name</label><input type="text" id="inp-food" class="input-field" placeholder="e.g. Chapati & Paneer / Tea">
+          <label>Quantity</label><input type="text" id="inp-qty" class="input-field" placeholder="e.g. 2 Nos / 1 Cup">`;
+      } else if (type === 'sleep') {
+        document.getElementById('form-title').innerText = "Log Sleep 😴";
+        document.getElementById('form-inputs').innerHTML = `
+          <label>Duration (Hours)</label><input type="number" step="0.5" id="inp-sleep" class="input-field">
+          <label>Quality Rate (1-5)</label><input type="number" id="inp-quality" class="input-field">`;
+      }
+    }
+
+    function submitData() {
+      if (currentPayload.type === 'workout') {
+        currentPayload.duration = document.getElementById('inp-duration')?.value;
+        currentPayload.distance = document.getElementById('inp-dist')?.value;
+        currentPayload.breaths = document.getElementById('inp-breaths')?.value;
+        currentPayload.reps = document.getElementById('inp-reps')?.value;
+        currentPayload.sets = document.getElementById('inp-sets')?.value;
+      } else if (currentPayload.type === 'hydration') {
+        currentPayload.qty = document.getElementById('inp-water').value;
+      } else if (currentPayload.type === 'diet') {
+        currentPayload.item = document.getElementById('inp-food').value;
+        currentPayload.qty = document.getElementById('inp-qty').value;
+      } else if (currentPayload.type === 'sleep') {
+        currentPayload.durationHours = document.getElementById('inp-sleep').value;
+        currentPayload.quality = document.getElementById('inp-quality').value;
+      }
+
+      google.script.run.withSuccessHandler(() => {
+        alert("Logged Successfully Mama!");
+        location.reload();
+      }).logFitnessData(currentPayload);
+    }
+  </script>
+</body>
+</html>
